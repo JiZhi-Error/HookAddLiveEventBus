@@ -27,8 +27,8 @@ class MainHook : IXposedHookLoadPackage {
                         // 只初始化一次
                         if (systemUI_LiveEventBus == null) {
                             systemUI_LiveEventBus = LiveEventBus.config()
-                                .lifecycleObserverAlwaysActive(false)
-                                .autoClear(true)
+                                .lifecycleObserverAlwaysActive(true)
+                                .autoClear(false)
                             Log.i(TAG, "SystemUI,config $systemUI_LiveEventBus")
                             LiveEventBus.get(
                                 "hookaddliveeventbus_SystemUI_String",
@@ -36,6 +36,20 @@ class MainHook : IXposedHookLoadPackage {
                             ).observeStickyForever {
                                 Log.i(TAG, "SystemUI接收到数据：$it")
                             }
+
+                            LiveEventBus.get(
+                                "hookaddliveeventbus_SystemUI_String_Post",
+                                String::class.java
+                            ).observeStickyForever {
+                                Log.i(TAG, "SystemUI接收到数据：$it")
+                                LiveEventBus
+                                    .get("hookaddliveeventbus_SystemUI_String_Get")
+                                    .postAcrossApp("我是从SystemUI来的数据！！！4444444444")
+                            }
+
+                            LiveEventBus
+                                .get("hookaddliveeventbus_SystemUI_String_Init")
+                                .broadcast("我是从SystemUI来的数据！！！66666666")
                         }
                     }
                 })
